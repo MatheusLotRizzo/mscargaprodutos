@@ -54,6 +54,26 @@ public class ProdutoEntity {
         return preco;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setQuantidadeEstoque(int quantidadeEstoque) {
+        this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
+
     private void validacoesPadroes(String nome, String descricao, int quantidadeEstoque, double preco) throws BusinessException {
         if (nome == null || nome.isEmpty()) {
             throw new BusinessException("Nome do produto não pode ser nulo ou vazio");
