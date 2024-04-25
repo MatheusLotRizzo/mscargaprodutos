@@ -69,13 +69,14 @@ public class BatchConfiguration {
 
         String sql = """
                     MERGE INTO produtos AS target
-                    USING (VALUES (:nome, :descricao, :quantidadeEstoque, :nome)) AS source (nome, descricao, quantidade_estoque, preco)
+                    USING (VALUES (:nome, :descricao, :quantidadeEstoque, :preco)) AS source (nome, descricao, quantidade_estoque, preco)
                     ON target.nome = source.nome
                     WHEN MATCHED THEN
                         UPDATE SET target.descricao = source.descricao, target.quantidade_estoque = source.quantidade_estoque, target.preco = source.preco
                     WHEN NOT MATCHED THEN
                         INSERT (nome, descricao, quantidade_estoque, preco) VALUES (source.nome, source.descricao, source.quantidade_estoque, source.preco);
                 """;
+
         return new JdbcBatchItemWriterBuilder<ProdutoEntity>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .dataSource(dataSource)

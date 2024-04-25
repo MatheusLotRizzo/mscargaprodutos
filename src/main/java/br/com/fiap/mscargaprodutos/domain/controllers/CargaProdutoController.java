@@ -26,6 +26,7 @@ public class CargaProdutoController {
         }  catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(MessageErrorHandler.create(e.getMessage()));
         } catch (IOException e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().body(MessageErrorHandler.create("Erro ao Salvar arquivos"));
         }
     }

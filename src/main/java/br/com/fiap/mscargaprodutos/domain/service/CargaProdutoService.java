@@ -6,9 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class CargaProdutoService {
@@ -16,15 +15,15 @@ public class CargaProdutoService {
     public String receberArquivoCargaProdutos(MultipartFile arquivo) throws IOException {
         String extensaoArquivo = extrairExtensao(arquivo.getOriginalFilename());
 
-//        if (!extensaoArquivo.equals("csv")) {
-//            throw new IllegalArgumentException("Extensão do arquivo inválida");
-//        }
+        if (!extensaoArquivo.equals("csv")) {
+            throw new IllegalArgumentException("Extensão do arquivo inválida");
+        }
 
-        String path = new ClassPathResource("produtos.csv").getPath();
-        String dataAtual = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss"));
-        System.out.println(path);
-        String caminho = path + "carga-" + dataAtual + "." + extensaoArquivo;
-        Files.copy(arquivo.getInputStream(), Paths.get(caminho));
+        String caminho = new ClassPathResource("/src/main/resources/arquivoscarga/").getPath();
+        Path path = Paths.get(caminho + "carga-produtos." + extensaoArquivo);
+
+        Files.deleteIfExists(path);
+        Files.copy(arquivo.getInputStream(), path);
         return "Arquivo salvo com sucesso";
     }
 
