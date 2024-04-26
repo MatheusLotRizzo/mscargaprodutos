@@ -1,5 +1,6 @@
 package br.com.fiap.mscargaprodutos.domain.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,19 +13,26 @@ import java.nio.file.Paths;
 @Service
 public class CargaProdutoService {
 
+    @Value("${caminho.base}")
+    private String caminhoBase;
+
     public String receberArquivoCargaProdutos(MultipartFile arquivo) throws IOException {
-        String extensaoArquivo = extrairExtensao(arquivo.getOriginalFilename());
-
-        if (!extensaoArquivo.equals("csv")) {
-            throw new IllegalArgumentException("Extensão do arquivo inválida");
-        }
-
-        String caminho = new ClassPathResource("/src/main/resources/arquivoscarga/").getPath();
-        Path path = Paths.get(caminho + "carga-produtos." + extensaoArquivo);
-
+        validaArquivo(arquivo);
+        Path path = Paths.get(new ClassPathResource(caminhoBase).getPath() + "carga-produtos.csv");
         Files.deleteIfExists(path);
         Files.copy(arquivo.getInputStream(), path);
         return "Arquivo salvo com sucesso";
+    }
+
+    private void validaArquivo(MultipartFile arquivo) {
+        if (arquivo.isEmpty()) {
+            throw new IllegalArgumentException("Arquivo não enviado");
+        }
+
+        String extensaoArquivo = extrairExtensao(arquivo.getOriginalFilename());
+        if (!extensaoArquivo.equals("csv")) {
+            throw new IllegalArgumentException("Extensão do arquivo inválida");
+        }
     }
 
     private String extrairExtensao(String originalFilename) {
