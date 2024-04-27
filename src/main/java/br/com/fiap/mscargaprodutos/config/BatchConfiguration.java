@@ -26,6 +26,9 @@ import javax.sql.DataSource;
 @Configuration
 public class BatchConfiguration {
 
+    @Value("${spring.jpa.properties.hibernate.dialect}")
+    private String dialect;
+
     @Bean
     public Job job(JobRepository jobRepository, Step step){
         return new JobBuilder("jobAtualizarProdutos", jobRepository)
@@ -62,13 +65,19 @@ public class BatchConfiguration {
 
     @Bean
     public ItemWriter<ProdutoEntity> itemWriter(@Autowired DataSource dataSource){
-//        String sql = """
-//                    insert into produtos (nome, descricao, quantidade_estoque, preco)
-//                    values (:nome, :descricao, :quantidadeEstoque, :preco)
-//                    on duplicate key update nome = :nome
-//                """;
-
-        String sql = """
+        String sql;
+        if (dialect.contains("PostgreSQLDialect")){
+            sql = """
+                INSERT INTO produtos (nome, descricao, quantidade_estoque, preco)
+                        VALUES (:nome, :descricao, :quantidadeEstoque, :preco)
+                        ON CONFLICT (nome)
+                                DO UPDATE SET
+                        descricao = EXCLUDED.descricao,
+                                quantidade_estoque = EXCLUDED.quantidade_estoque,
+                                preco = EXCLUDED.preco;
+                """;
+        }else{
+            sql = """
                     MERGE INTO produtos AS target
                     USING (VALUES (:nome, :descricao, :quantidadeEstoque, :preco)) AS source (nome, descricao, quantidade_estoque, preco)
                     ON target.nome = source.nome
@@ -77,6 +86,7 @@ public class BatchConfiguration {
                     WHEN NOT MATCHED THEN
                         INSERT (nome, descricao, quantidade_estoque, preco) VALUES (source.nome, source.descricao, source.quantidade_estoque, source.preco);
                 """;
+        }
 
         return new JdbcBatchItemWriterBuilder<ProdutoEntity>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
