@@ -35,7 +35,7 @@ public class CargaProdutoController {
 
     @PostMapping
     @ApiResponseSwaggerOk
-    public ResponseEntity<?> carregarCargaProdutos(@RequestParam("arquivo")MultipartFile arquivo) {
+    public ResponseEntity<?> carregarCargaProdutos(@RequestParam("arquivo") MultipartFile arquivo) {
         return SpringControllerUtils.response(HttpStatus.OK, () -> cargaProdutoService.receberArquivoCargaProdutos(arquivo));
     }
 
@@ -50,7 +50,6 @@ public class CargaProdutoController {
 
             return ResponseEntity.ok().body(this.jobLauncher.run(job, jobParameters).getExitStatus());
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(MessageErrorHandler.create("Erro ao tentar executar a carga de produtos"));
         }
     }

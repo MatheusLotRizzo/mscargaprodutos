@@ -32,7 +32,7 @@ public class CargaProdutoService {
     }
 
     private void validaArquivo(MultipartFile arquivo) {
-        if (arquivo.isEmpty()) {
+        if (arquivo.isEmpty() || arquivo == null) {
             throw new IllegalArgumentException("Arquivo não enviado");
         }
 

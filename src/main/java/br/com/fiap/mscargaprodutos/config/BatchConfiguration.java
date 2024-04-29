@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 @Configuration
 public class BatchConfiguration {
 
-    @Value("${spring.jpa.properties.hibernate.dialect}")
-    private String dialect;
+    @Value("${spring.datasource.url}")
+    private String urlBanco;
 
     @Bean
     public Job job(JobRepository jobRepository, Step step){
@@ -66,7 +66,7 @@ public class BatchConfiguration {
     @Bean
     public ItemWriter<ProdutoEntity> itemWriter(@Autowired DataSource dataSource){
         String sql;
-        if (dialect.contains("PostgreSQLDialect")){
+        if (urlBanco.contains("postgresql")){
             sql = """
                 INSERT INTO produtos (nome, descricao, quantidade_estoque, preco)
                         VALUES (:nome, :descricao, :quantidadeEstoque, :preco)
