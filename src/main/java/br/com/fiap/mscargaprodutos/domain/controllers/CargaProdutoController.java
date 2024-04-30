@@ -40,6 +40,7 @@ public class CargaProdutoController {
     }
 
     @PostMapping("/executar")
+    @ApiResponseSwaggerOk
     public ResponseEntity<?> executarCargaProdutos(@RequestBody JobLaunchRequest request) {
         try {
             Job job = this.context.getBean(request.getName(), Job.class);
