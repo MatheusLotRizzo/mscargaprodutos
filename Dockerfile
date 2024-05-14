@@ -12,6 +12,8 @@ FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
+EXPOSE 8083
+
  # Copie o arquivo JAR do seu projeto para dentro do contêiner
 COPY --from=builder /app/target/*.jar /app/mscargaprodutos.jar
 
